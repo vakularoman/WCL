@@ -14,6 +14,10 @@ namespace WCL
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton<MainWindow>();
+                    services.AddHttpClient<PetStoreHttpClient>(c =>
+                    {
+                        c.BaseAddress = new Uri("https://petstore.swagger.io/v2/");
+                    });
                 })
                 .Build();
         }

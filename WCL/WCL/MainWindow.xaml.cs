@@ -9,9 +9,9 @@ namespace WCL
     {
         public MainViewModel MainViewModel { get; }
 
-        public MainWindow()
+        public MainWindow(IServiceProvider serviceProvider)
         {
-            MainViewModel = new MainViewModel();
+            MainViewModel = new MainViewModel(serviceProvider);
             DataContext = this;
 
             InitializeComponent();

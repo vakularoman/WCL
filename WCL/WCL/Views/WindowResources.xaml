@@ -32,4 +32,5 @@
     </Style>
 
     <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 </ResourceDictionary>

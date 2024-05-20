@@ -99,6 +99,7 @@ namespace WCL.ViewModels
         public void LogOut()
         {
             IsAuth = false;
+            IsFailedToLoad = false;
         }
     }
 }

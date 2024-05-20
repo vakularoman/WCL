@@ -10,6 +10,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <ScrollViewer Grid.Row="0"
                           VerticalScrollBarVisibility="Auto"
@@ -79,7 +80,12 @@
 
                 </Grid>
             </ScrollViewer>
-            <Button Grid.Row="1"
+            <TextBlock Grid.Row="1"
+                       Foreground="Red"
+                       HorizontalAlignment="Center"
+                       Text="Fields cannot be empty"
+                       Visibility="{Binding IsAnyFieldEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <Button Grid.Row="2"
                     VerticalAlignment="Bottom"
                     Style="{StaticResource ButtonRoundedCorner}"
                     Content="Submit"

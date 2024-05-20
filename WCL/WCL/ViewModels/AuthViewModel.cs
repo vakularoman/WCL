@@ -13,9 +13,12 @@ namespace WCL.ViewModels
         private string _userName;
         private string _password;
         private bool _isHttpOperationRunning;
+        private bool _isFailedToLogIn;
+        private bool _isFailedToRegister;
 
         private readonly Func<string, Task> _logInFunc;
         private readonly Action _logOutFunc;
+        private bool _isCredEmpty;
 
         public AuthViewModel(IServiceProvider serviceProvider, Func<string, Task> logInFunc, Action logOutFunc)
         {
@@ -88,6 +91,51 @@ namespace WCL.ViewModels
             }
         }
 
+        public bool IsFailedToLogIn
+        {
+            get => _isFailedToLogIn;
+            set
+            {
+                if (value == _isFailedToLogIn)
+                {
+                    return;
+                }
+
+                _isFailedToLogIn = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsFailedToRegister
+        {
+            get => _isFailedToRegister;
+            set
+            {
+                if (value == _isFailedToRegister)
+                {
+                    return;
+                }
+
+                _isFailedToRegister = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsCredEmpty
+        {
+            get => _isCredEmpty;
+            set
+            {
+                if (value == _isCredEmpty)
+                {
+                    return;
+                }
+
+                _isCredEmpty = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand OpenRegistrationCommand { get; }
 
         public ICommand LogInCommand { get; }
@@ -99,6 +147,9 @@ namespace WCL.ViewModels
             var viewModel = new AuthWindowViewModel();
             var result = WindowService.ShowDialog(viewModel);
 
+            IsFailedToRegister = false;
+            IsFailedToLogIn = false;
+
             if (result == true)
             {
                 IsHttpOperationRunning = true;
@@ -107,15 +158,33 @@ namespace WCL.ViewModels
                 IsAuth = isSuccess;
 
                 IsHttpOperationRunning = false;
-                await _logInFunc.Invoke(viewModel.UserInfo.Username).ConfigureAwait(false);
 
-                UserName = viewModel.UserInfo.Username;
-                Password = viewModel.UserInfo.Password;
+                if (isSuccess)
+                {
+                    await _logInFunc.Invoke(viewModel.UserInfo.Username).ConfigureAwait(false);
+
+                    UserName = viewModel.UserInfo.Username;
+                    Password = viewModel.UserInfo.Password;
+                }
+                else
+                {
+                    IsFailedToRegister = true;
+                }
             }
         }
 
         public async Task LogInCommandExecute()
         {
+            IsFailedToRegister = false;
+            IsFailedToLogIn = false;
+
+            if (string.IsNullOrEmpty(UserName) || string.IsNullOrEmpty(Password))
+            {
+                IsCredEmpty = true;
+                return;
+            }
+
+            IsCredEmpty = false;
             IsHttpOperationRunning = true;
 
             var isSuccess = await _httpClient.TryLogInAsync(UserName, Password).ConfigureAwait(false);
@@ -126,6 +195,11 @@ namespace WCL.ViewModels
             {
                 IsAuth = isSuccess;
                 await _logInFunc.Invoke(UserName).ConfigureAwait(false);
+                IsFailedToLogIn = false;
+            }
+            else
+            {
+                IsFailedToLogIn = true;
             }
         }
 

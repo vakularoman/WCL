@@ -5,7 +5,7 @@ namespace WCL.ViewModels
     public class UserInfoViewModel : ObservableObject
     {
         private long _id;
-        private string _userName;
+        private string _username;
         private string _firstName;
         private string _lastName;
         private string _email;
@@ -28,17 +28,17 @@ namespace WCL.ViewModels
             }
         }
 
-        public string UserName
+        public string Username
         {
-            get => _userName;
+            get => _username;
             set
             {
-                if (value == _userName)
+                if (value == _username)
                 {
                     return;
                 }
 
-                _userName = value;
+                _username = value;
                 OnPropertyChanged();
             }
         }

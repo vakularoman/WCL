@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:WCL.Converters">
 
     <Style x:Key="BlackBorderStyle"
            TargetType="{x:Type Border}">
@@ -29,4 +30,6 @@
             </Style>
         </Style.Resources>
     </Style>
+
+    <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
 </ResourceDictionary>

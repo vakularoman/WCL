@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using WCL.Enums;
 using WCL.ViewModels;
 
@@ -9,20 +8,20 @@ namespace WCL
     public class MainViewModel : ObservableObject
     {
         private MainViewType _viewType;
-        private readonly IServiceProvider _serviceProvider;
 
         public MainViewModel(IServiceProvider serviceProvider)
         {
             ChangeViewCommand = new RelayCommand<MainViewType>(ChangeViewCommandExecute, ChangeViewCommandCanExecute);
-            _serviceProvider = serviceProvider;
-            AuthViewModel = new AuthViewModel(serviceProvider);
+
+            UserInfoPageViewModel = new UserInfoPageViewModel(serviceProvider);
+            AuthViewModel = new AuthViewModel(serviceProvider, UserInfoPageViewModel.FetchUserInfoAsync, UserInfoPageViewModel.LogOut);
         }
 
         public RelayCommand<MainViewType> ChangeViewCommand { get; }
 
-        public DevInfoViewModel DevInfoViewModel { get; } = new DevInfoViewModel();
+        public DevInfoViewModel DevInfoViewModel { get; } = new();
 
-        public UserInfoViewModel UserInfoViewModel { get; } = new UserInfoViewModel();
+        public UserInfoPageViewModel UserInfoPageViewModel { get; }
 
         public AuthViewModel AuthViewModel { get; }
 

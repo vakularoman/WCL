@@ -11,7 +11,7 @@ namespace WCL.ViewModels
             SubmitCommand = new RelayCommand(SubmitCommandExecute);
         }
 
-        public UserInfoViewModel UserInfo { get; } = new UserInfoViewModel();
+        public UserInfoViewModel UserInfo { get; } = new();
 
         public ICommand SubmitCommand { get; }
 

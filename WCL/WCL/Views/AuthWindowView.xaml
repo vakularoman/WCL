@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:WCL.ViewModels">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/Views/MainWindowResources.xaml" />
+        <ResourceDictionary Source="/Views/WindowResources.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type viewModels:AuthWindowViewModel}">
         <Grid Style="{StaticResource GridListContentStyle}"
@@ -35,7 +35,7 @@
                     <TextBox Grid.Column="1"
                              Grid.Row="0"
                              VerticalContentAlignment="Center"
-                             Text="{Binding UserInfo.UserName}" />
+                             Text="{Binding UserInfo.Username}" />
                     <TextBlock Grid.Column="0"
                                Grid.Row="1"
                                VerticalAlignment="Center"

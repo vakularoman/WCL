@@ -12,11 +12,20 @@ namespace WCL.ViewModels
         private readonly PetStoreHttpClient _httpClient;
         private string _userName;
         private string _password;
+        private bool _isHttpOperationRunning;
 
-        public AuthViewModel(IServiceProvider serviceProvider)
+        private readonly Func<string, Task> _logInFunc;
+        private readonly Action _logOutFunc;
+
+        public AuthViewModel(IServiceProvider serviceProvider, Func<string, Task> logInFunc, Action logOutFunc)
         {
-            OpenRegistrationCommand = new AsyncRelayCommand(OpenRegistrationExecute);
+            OpenRegistrationCommand = new AsyncRelayCommand(OpenRegistrationCommandExecute);
+            LogInCommand = new AsyncRelayCommand(LogInCommandExecute);
+            LogOutCommand = new AsyncRelayCommand(LogOutCommandExecute);
+
             _httpClient = serviceProvider.GetService<PetStoreHttpClient>()!;
+            _logInFunc = logInFunc;
+            _logOutFunc = logOutFunc;
         }
 
         public bool IsAuth
@@ -64,17 +73,70 @@ namespace WCL.ViewModels
             }
         }
 
-        public ICommand OpenRegistrationCommand { get; set; }
+        public bool IsHttpOperationRunning
+        {
+            get => _isHttpOperationRunning;
+            set
+            {
+                if (value == _isHttpOperationRunning)
+                {
+                    return;
+                }
 
-        public async Task OpenRegistrationExecute()
+                _isHttpOperationRunning = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand OpenRegistrationCommand { get; }
+
+        public ICommand LogInCommand { get; }
+
+        public ICommand LogOutCommand { get; }
+
+        public async Task OpenRegistrationCommandExecute()
         {
             var viewModel = new AuthWindowViewModel();
             var result = WindowService.ShowDialog(viewModel);
 
             if (result == true)
             {
+                IsHttpOperationRunning = true;
+
                 var isSuccess = await _httpClient.TryRegisterAsync(viewModel.UserInfo).ConfigureAwait(false);
                 IsAuth = isSuccess;
+
+                IsHttpOperationRunning = false;
+                await _logInFunc.Invoke(viewModel.UserInfo.Username).ConfigureAwait(false);
+
+                UserName = viewModel.UserInfo.Username;
+                Password = viewModel.UserInfo.Password;
+            }
+        }
+
+        public async Task LogInCommandExecute()
+        {
+            IsHttpOperationRunning = true;
+
+            var isSuccess = await _httpClient.TryLogInAsync(UserName, Password).ConfigureAwait(false);
+
+            IsHttpOperationRunning = false;
+
+            if (isSuccess)
+            {
+                IsAuth = isSuccess;
+                await _logInFunc.Invoke(UserName).ConfigureAwait(false);
+            }
+        }
+
+        public async Task LogOutCommandExecute()
+        {
+            var isSuccess = await _httpClient.TryLogOutAsync().ConfigureAwait(false);
+
+            if (isSuccess)
+            {
+                IsAuth = false;
+                _logOutFunc?.Invoke();
             }
         }
     }
